@@ -56,7 +56,7 @@
 ================================================== */
   body {
     background: #fff;
-    font: 14px/21px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font: 14px/21px "museo-slab", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #333333;
     -webkit-font-smoothing: antialiased; /* Fix for webkit rendering */
     -webkit-text-size-adjust: 100%;
@@ -72,7 +72,7 @@ $heading-color: #333333;
 ================================================== */
   h1, h2, h3, h4, h5, h6 {
     color: $heading-color;
-    font-family: "Georgia", "Times New Roman", serif;
+    font-family: "museo-slab", "Georgia", "Times New Roman", serif;
     font-weight: normal; }
   h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { font-weight: inherit; color:$heading-color}
   h1 { font-size: 46px; line-height: 50px; margin-bottom: 14px;}
@@ -168,7 +168,7 @@ $heading-color: #333333;
     margin-bottom: 20px;
     line-height: normal;
     padding: 8px 10px;
-    font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    font-family: "museo-slab", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
   .button:hover,
   button:hover,
@@ -237,7 +237,7 @@ $heading-color: #333333;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
     border-radius: 2px;
-    font: 13px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font: 13px "museo-slab", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
     color:  #333333;
     margin: 0;
     width: 210px;
@@ -755,7 +755,7 @@ $heading-color: #333333;
   body {
     background-color: #ffffff;
     color: #333333;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'museo-slab', 'Roboto', sans-serif;
     font-size: 12px;
   }
   a {
@@ -773,7 +773,7 @@ $heading-color: #333333;
     color: #333333;
     font-size: 14px;
     font-weight: bold;
-    font-family: 'Roboto', sans-serif !important;
+    font-family: 'museo-slab', 'Roboto', sans-serif !important;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 20px;
@@ -845,25 +845,25 @@ $heading-color: #333333;
   h3 {
     font-size: 13px;
     line-height: 17px;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'museo-slab', 'Roboto', sans-serif;
     font-weight: bold;
   }
   h4 {
 
-    font-family: 'Roboto', sans-serif;
+    font-family: 'museo-slab', 'Roboto', sans-serif;
     font-size: 13px;
     line-height: 17px;
     font-weight: bold;
   }
   h5 {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'museo-slab', 'Roboto', sans-serif;
     font-size: 13px;
     line-height: 17px;
     font-style: italic;
 
   }
   h6 {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'museo-slab', 'Roboto', sans-serif;
     font-size: 11px;
     line-height: 15px;
 
@@ -913,7 +913,7 @@ $heading-color: #333333;
     -webkit-border-radius: 0 !important;
     border-radius: 0 !important;
     color: #333333;
-    font-family: 'Roboto', sans-serif !important;
+    font-family: 'museo-slab', 'Roboto', sans-serif !important;
     font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
@@ -2161,7 +2161,7 @@ $heading-color: #333333;
     text-align: center;
   }
   article.post div.date span {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'museo-slab', 'Roboto', sans-serif;
     font-size: 13px;
     font-weight: bold;
     display: block;
@@ -2384,7 +2384,7 @@ $heading-color: #333333;
   }
   .fancybox-error {
     color: #444;
-    font: 14px/20px 'Roboto', sans-serif;
+    font: 14px/20px 'museo-slab', 'Roboto', sans-serif;
     margin: 0;
     padding: 15px;
     white-space: nowrap;
@@ -2504,7 +2504,7 @@ $heading-color: #333333;
   /* Title helper */
   .fancybox-title {
     visibility: hidden;
-    font: normal 13px/20px 'Roboto', sans-serif;
+    font: normal 13px/20px 'museo-slab', 'Roboto', sans-serif;
     position: relative;
     text-shadow: none;
     z-index: 8050;
@@ -2690,7 +2690,7 @@ $shareCountBg: #fff;
 $shareBorderColor: #ececec;
 
 .social-sharing {
-  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'museo-slab', "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   * {
     -webkit-box-sizing:border-box;
