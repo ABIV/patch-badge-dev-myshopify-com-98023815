@@ -1,191 +1,205 @@
-{% if product.compare_at_price > product.price %}{% assign on_sale = true %}{% endif %}
-<!--START PRODUCT-->
-<div itemscope itemtype="http://schema.org/Product" class="twelve columns alpha omega">
-	<meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
-	<meta itemprop="image" content="{{ product.featured_image.src | product_img_url: 'grande' }}" />
-	<!-- START PRODUCT IMAGES-->
-	<section id="images" class="seven columns alpha">
-		<!-- START ZOOM IMAGE-->
-    {% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
-    {% if product.featured_image %}
-      {% if settings.image_enlarge == "lightbox" %}<a href="{{ featured_image | img_url: 'master' }}" class="fancybox-media" id="placeholder">{% endif %}
-        <img id="feature-image" src="{{ featured_image | img_url: '1024x1024' }}" alt="{{ featured_image.alt | escape }}" />
-      {% if settings.image_enlarge == "lightbox" %}</a>{% endif %}
-    {% if on_sale == true %}<div class="sale">{{ 'products.product.on_sale' | t }}</div>{% endif %}
+<!-- /templates/product.liquid -->
+{% comment %}
+
+  Rich snippets (itemscope, itemtype, etc.) for products are a theme requirement,
+  and allow search engines to easily understand what the content is.
+
+  For more information on these Scheme.org tags, visit:
+    - http://schema.org/docs/gs.html
+
+{% endcomment %}
+
+<div itemscope itemtype="http://schema.org/Product">
+
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+
+  <div class="product grid grid--no-gutters" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+    <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+    <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+
+    {% comment %}
+      Get first variant, or deep linked one
+    {% endcomment %}
+    {% assign current_variant = product.selected_or_first_available_variant %}
+
+    {% comment %}
+      Get first image
+    {% endcomment %}
+
+    {% assign first_image = current_variant.featured_image | default: product.featured_image %}
+
+    {% if product.images.size > 1 and settings.skip_first_product_image and first_image == product.featured_image %}
+      {% assign first_image = product.images[1] %}
     {% endif %}
-		<!-- END ZOOM IMAGE-->
-		{% if product.images.size > 1 %}
-		<!-- START GALLERY-->
-		<section id="gallery">
-			{% for image in product.images %}
-			<a href="{{ image.src | product_img_url: '1024x1024' }}" class="{% cycle 'first','','','last' %}">
-				<img src="{{ image.src | product_img_url: 'medium' }}" alt="{{ image.alt | escape }}" />
-			</a>
-			{% endfor %}
-		</section>
-		<!-- END GALLERY-->
-		{% endif %}
-	</section>
-	<!-- END PRODUCT IMAGES-->
-	<!--START BUY-->
-	<section id="buy" class="five columns omega">
-		<form action="/cart/add" method="post" id="product-form" {% if settings.cart_type == 'drawer' %}class="quickAdd"{% endif %} enctype="multipart/form-data">
-			<h1 itemprop="name">{{ product.title }}</h1>
-			<h2 id="product-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-			      <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
-			      {% if product.available %}
-			      <link itemprop="availability" href="http://schema.org/InStock" />
-			      {% else %}
-			      <link itemprop="availability" href="http://schema.org/OutOfStock" />
-			      {% endif %}
-   				  {% assign variant = product.selected_or_first_available_variant %}
-				  {% if variant.compare_at_price > variant.price %}
-		          <span class="product-price on-sale" itemprop="price">{{ variant.price | money }}</span>&nbsp;<del class="product-compare-price">{{ variant.compare_at_price_max | money }}</del>
-		          {% else %}
-		          <span class="product-price" itemprop="price">{{ variant.price | money }}</span>
-		          {% endif %}
-			</h2>
-			{% assign hide_default_title = false %}
-		    {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
-		        {% assign hide_default_title = true %}
-		    {% endif %}
-			<div id="product-variants" class="{% if hide_default_title %} hidden{% endif %}">
-		       <select id="product-select" name="id" class="hidden">
-		       {% for variant in product.variants %}
-		         <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
-		       {% endfor %}
-		       </select>
-		    </div>
-		   <input type="submit" value="{{ 'products.product.add_to_cart' | t }}" id="add" class="btn add-to-cart" />
-		</form>
-	  {% if settings.social_sharing_products %}
-	    {% include 'social-sharing' %}
-	  {% endif %}
-		{% if settings.product_desc_right == true %}
-		<!--START PRODUCT INFO-->
-		<section id="product-info" class="right">
-			{% if settings.show_shipping_tab == true %}
-			<ul class='tabs right clearfix'>
-		    	<li class="first"><a href='#tab1'>{{ 'products.product.product_description_label' | t }}</a></li>
-		    	<li><a href='#tab2'>{{ 'products.product.second_tab_label' | t }}</a></li>
-		  	</ul>
-			<div id='tab1'>
-				<div class="wysiwyg" itemprop="description">
-			    {{ product.description }}
-				</div>
-			 </div>
-			 <div id='tab2'>
-			   	<div class="wysiwyg">
-			    {{ pages[settings.shipping_tab_content].content }}
-				</div>
-			</div>
-			{% else %}
-			<div class="wysiwyg no-tabs" itemprop="description">
-		    {{ product.description }}
-			</div>
-			{% endif %}
-		</section>
-		<!--END PRODUCT INFO-->
-		{% endif %}
-	</section>
-	<!--END BUY-->
-	<br class="clear">
-	{% if settings.product_desc_right == false %}
-	<!--START PRODUCT INFO-->
-	<section id="product-info">
-		{% if settings.show_shipping_tab == true %}
-		<ul class='tabs clearfix'>
-	    	<li class="first"><a href='#tab1'>{{ 'products.product.product_description_label' | t }}</a></li>
-		    <li><a href='#tab2'>{{ 'products.product.second_tab_label' | t }}</a></li>
-	  	</ul>
-		<div id='tab1'>
-			<div class="wysiwyg" itemprop="description">
-		    {{ product.description }}
-			</div>
-		 </div>
-		 <div id='tab2'>
-		   	<div class="wysiwyg">
-		    {{ pages[settings.shipping_tab_content].content }}
-			</div>
-		</div>
-		{% else %}
-		<div class="wysiwyg no-tabs" itemprop="description">
-	    {{ product.description }}
-		</div>
-		{% endif %}
-	</section>
-	<!--END PRODUCT INFO-->
-	{% endif %}
 
-	{% assign current_product = product.handle %}
-	{% assign current_collection = collection.handle %}
-	{% assign found_current_product = false %}
+    {% comment %}
+      Set variables for product image grid
+    {% endcomment %}
+    {% if settings.product_image_type == 'portrait' %}
+      {% if product.images.size == 1 %}
+        {% assign grid_item_width = '' %}
+      {% elsif product.images.size == 2 and settings.skip_first_product_image %}
+        {% assign grid_item_width = '' %}
+      {% else %}
+        {% assign grid_item_width = 'medium-up--one-half' %}
+      {% endif %}
+      {% assign is_portrait_image = true %}
+    {% else %}
+      {% assign grid_item_width = '' %}
+    {% endif %}
 
-	{% if current_collection != blank and collection.all_products_count > 1 %}
-		<!--START PRODUCT GRID-->
-		<section id="related-products" class="product-grid twelve columns alpha omega">
-		<h2>{{ 'products.product.related_products_label' | t }}</h2>
+    {% if product.images.size > 0 %}
 
-		{% comment %}Show three products from the current collection but make sure that doesn't include the current product{% endcomment %}
-		{% for product in collections[current_collection].products limit: 3 %}
-			{% if product.handle == current_product %}
-				{% assign found_current_product = true %}
-			{% endif %}
-		{% endfor %}
-		{% if found_current_product == true %}
-			{% comment %}Get four products but skip the current product - that gives us three products we can show {% endcomment %}
-			{% for product in collections[current_collection].products limit: 4 %}
-				{% unless product.handle == current_product %}
-					{% include 'product-grid-item' %}
-				{% endunless %}
-			{% endfor %}
-		{% else %}
-			{% comment %}Get three products because we know these don't include the current product {% endcomment %}
-			{% for product in collections[current_collection].products limit: 3 %}
-				{% include 'product-grid-item' %}
-			{% endfor %}
-		{% endif %}
-		</section>
-		<!--END PRODUCT GRID-->
-		<br class="clear">
-	{% endif %}
+      {% comment %}
+        Show first image
+      {% endcomment %}
 
+      <div class="product__photo grid__item {{ grid_item_width }}">
+        <img class="product__photo--variant" data-default-src="{{ first_image | img_url: '2048x2048' }}" src="{{ first_image | img_url: '2048x2048' }}" alt="{{ first_image.alt | escape }}">
+      </div>
+
+      {% comment %}
+        Counting images shown on the page
+      {% endcomment %}
+
+      {% assign index = 1 %}
+
+      {% comment %}
+        If we have portrait images, we show two per row, so let's get a second image.
+        That image will be moved down below the description on mobile, hence why we'll use
+        `small--hide`. The image moved down is stored in the variable `duplicate_image`.
+      {% endcomment %}
+
+      {% if is_portrait_image %}
+        {% for image in product.images %}
+          {% unless image == first_image %}
+            {% unless settings.skip_first_product_image and image == product.featured_image %}
+              <div class="product__photo grid__item small--hide {{ grid_item_width }}">
+                <img src="{{ image | img_url: '2048x2048' }}" alt="{{ image.alt | escape }}">
+              </div>
+              {% assign index = index | plus: 1 %}
+              {% assign index_offset = forloop.index %}
+              {% assign duplicate_image = image %}
+              {% break %}
+            {% endunless %}
+          {% endunless %}
+        {% endfor %}
+      {% endif %}
+
+    {% endif %}
+
+    <div class="product__details grid__item">
+      <div class="grid grid--no-gutters product__details-content">
+        <div class="grid__item large-up--two-twelfths large-up--push-two-twelfths medium-up--three-twelfths medium-up--push-one-twelfth">
+          <h2 itemprop="name">{{ product.title }}</h2>
+          <form action="/cart/add" method="post" id="AddToCartForm" enctype="multipart/form-data" class="product__form">
+
+            {% comment %}
+              Select element hidden when JS initializes. Safeguard for JS-disabled.
+            {% endcomment %}
+            <select name="id" id="ProductSelect">
+              {% for variant in product.variants %}
+                {% if variant.available %}
+                  <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} value="{{ variant.id }}" data-sku="{{ variant.sku }}">{{ variant.title }} - {{ variant.price | money_with_currency }}</option>
+
+                {% else %}
+                  <option disabled="disabled" data-sku="{{ variant.sku }}">
+                    {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+                  </option>
+                {% endif %}
+              {% endfor %}
+            </select>
+
+            {% comment %}
+              Not using the quantity selector in this theme. Uncomment to enable
+            {% endcomment %}
+
+            {% comment %}
+            <div class="product__quantity">
+              <label for="Quantity" class="product__quantity-label js-quantity-selector">{{ 'products.product.quantity' | t }}</label>
+              <input type="number" hidden="hidden" id="Quantity" name="quantity" value="1" min="1" class="js-quantity-selector">
+            </div>
+            {% endcomment %}
+
+            {% assign price = product.price | money_without_trailing_zeros %}
+            <p class="product__price">
+              {% if product.compare_at_price > product.price %}
+                <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+                <span class="product__price--reg">{{ product.compare_at_price | money_without_trailing_zeros }}</span>
+                <span class="product__price--sale">{{ 'products.general.now_price_html' | t: price: price }}</span>
+              {% else %}
+                <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+                <span class="product__price--reg js-price">
+                  {{ product.price | money_without_trailing_zeros }}
+                </span>
+              {% endif %}
+            </p>
+
+            {% if product.available %}
+              <button type="submit" name="add" id="AddToCart" class="btn add-to-cart">
+                <span class="add-to-cart__text">{{ 'products.product.add_to_cart' | t }}</span>
+              </button>
+            {% else %}
+              <button type="button" class="btn add-to-cart btn--disabled" disabled="disabled">
+                {{ 'products.product.sold_out' | t }}
+              </button>
+            {% endif %}
+
+          </form>
+        </div>
+        <div class="grid__item large-up--one-half large-up--push-three-twelfths medium-up--six-twelfths medium-up--push-two-twelfths">
+          <div class="product-single__errors"></div>
+          <div class="product-single__description rte" itemprop="description">
+            {{ product.description }}
+          </div>
+          {% if settings.social_sharing_products %}
+            {% include 'social-sharing' %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% comment %}
+      Show second product photo after description on mobile if
+      image setting style is 'portrait'
+    {% endcomment %}
+    {% if is_portrait_image and product.images.size > 1 %}
+      <div class="product__photo grid__item medium-up--hide {{ grid_item_width }}">
+        <img src="{{ duplicate_image | img_url: '2048x2048' }}" alt="{{ duplicate_image.alt | escape }}">
+      </div>
+    {% endif %}
+
+    {% comment %}
+      Show other product images below product info if there's any left to show
+    {% endcomment %}
+    {% if index < product.images.size %}
+      {% for image in product.images offset:index_offset %}
+        {% unless image == first_image %}
+          {% unless settings.skip_first_product_image and image == product.featured_image %}
+            <div class="product__photo grid__item {{ grid_item_width }}">
+              <img src="{{ image | img_url: '2048x2048' }}" alt="{{ image.alt | escape }}">
+            </div>
+          {% endunless %}
+        {% endunless %}
+      {% endfor %}
+    {% endif %}
+
+    <div class="product__back-button grid__item text-center">
+      <a href="{% if collection %}{{ collection.url }}{% else %}/{% endif %}" class="btn return-link">
+        <span class="icon icon-arrow-left" aria-hidden="true"></span>
+        <span>{{ 'products.product.back' | t }}</span>
+      </a>
+    </div>
+  </div>
 </div>
-<!--END PRODUCT-->
+
 <script>
-var selectCallback = function(variant, selector) {
-  if (variant) {
-		// Swap image.
-   if (variant.featured_image) {
-      var newImage = variant.featured_image;
-      var mainImageEl = jQuery('#feature-image')[0];
-      Shopify.Image.switchImage(newImage, mainImageEl, SimpleTheme.switchImage);
-    }
-    if (variant.available) {
-      // Selected a valid variant that is available.
-      jQuery('#add').removeClass('disabled').removeAttr('disabled').val({{ 'products.product.add_to_cart' | t | json }}).fadeTo(200,1);
-    } else {
-      // Variant is sold out.
-      jQuery('#add').val({{ 'products.product.sold_out' | t | json }}).addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
-    }
-    // Whether the variant is in stock or not, we can update the price and compare at price.
-    if ( variant.compare_at_price > variant.price ) {
-      jQuery('#product-price').html('<span class="product-price on-sale">'+ Shopify.formatMoney(variant.price, "{{ shop.money_format }}") +'</span>'+'&nbsp;<del class="product-compare-price">'+Shopify.formatMoney(variant.compare_at_price, "{{ shop.money_format }}")+ '</del>');
-    } else {
-      jQuery('#product-price').html('<span class="product-price">'+ Shopify.formatMoney(variant.price, "{{ shop.money_format }}") + '</span>' );
-    }
-  } else {
-    // variant doesn't exist.
-    jQuery('#add').val({{ 'products.product.unavailable' | t | json }}).addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+  // Override default values of theme.strings for each template.
+  // Alternate product templates can change values of
+  // add to cart button, sold out, and unavailable states here.
+  window.productStrings = {
+    addToCart: {{ 'products.product.add_to_cart' | t | json }},
+    soldOut: {{ 'products.product.sold_out' | t | json }}
   }
-};
-jQuery(function($) {
-  new Shopify.OptionSelectors('product-select', { product: {{ product | json }}, onVariantSelected: selectCallback, enableHistoryState: true });
-
-  // Add label if only one product option and it isn't 'Title'.
-  {% if product.options.size == 1 and product.options.first != 'Title' %}
-    $('.selector-wrapper:eq(0)').prepend('<label>{{ product.options.first | escape }}</label>');
-  {% endif %}
-
-});
 </script>
